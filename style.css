@@ -1,58 +1,168 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #ffdcdc;
-}
 
-.calculator {
-    background-color: #0b0a0a;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.display {
-    margin-bottom: 10px;
-}
+    :root {
+      --bg:        #f0edf8;
+      --card:      #faf9fc;
+      --border:    rgba(0,0,0,0.07);
+      --text:      #2d2640;
+      --text-soft: #8b84a0;
 
-#display {
-    width: 98%;
-    height: 40px;
-    font-size: 24px;
-    text-align: right;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding-right: 1px;
-}
+      --btn-bg:    #fff;
+      --btn-hover: #f3f0fa;
 
-.buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
+      --purple:    #b39ddb;
+      --purple-bg: #ede7f6;
+      --pink:      #f48fb1;
+      --pink-bg:   #fce4ec;
+      --teal:      #80cbc4;
+      --teal-bg:   #e0f2f1;
+      --orange:    #ffb74d;
+      --orange-bg: #fff3e0;
+      --eq-bg:     #b39ddb;
+      --eq-text:   #fff;
 
-button {
-    padding: 15px;
-    font-size: 18px;
-    border: none;
-    border-radius: 5px;
-    background-color: rgb(245, 158, 72);
-    color: white;
-    cursor: pointer;
-}
+      --shadow:    0 8px 32px rgba(100,80,160,0.1);
+      --radius:    18px;
+      --radius-sm: 12px;
+    }
 
-button:hover {
-    background-color: rgb(243, 163, 84);
-}
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
 
-.opreators-button {
-    background-color: rgb(246, 103, 2);
-}
+    /* BG BLOBS */
+    body::before, body::after {
+      content: '';
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0;
+    }
+    body::before { width: 350px; height: 350px; background: rgba(179,157,219,0.25); top: -80px; right: -80px; }
+    body::after  { width: 300px; height: 300px; background: rgba(128,203,196,0.2); bottom: -80px; left: -80px; }
 
-.opreators-button:hover {
-    background-color: rgb(255, 112, 0);
-}
+    /* CALCULATOR */
+    .calc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 24px;
+      width: 320px;
+      box-shadow: var(--shadow), 0 2px 0 rgba(255,255,255,0.8) inset;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* DISPLAY */
+    .display {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 20px 20px 16px;
+      margin-bottom: 20px;
+      min-height: 100px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .display-expr {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      min-height: 18px;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .display-main {
+      font-family: 'DM Mono', monospace;
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--text);
+      text-align: right;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: font-size 0.1s;
+    }
+
+    /* BUTTONS */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--btn-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: 0;
+      height: 58px;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:hover { background: var(--btn-hover); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(100,80,160,0.1); }
+    .btn:active, .btn.pressed { transform: translateY(1px) scale(0.96); box-shadow: none; }
+
+    /* RIPPLE */
+    .ripple {
+      position: absolute; border-radius: 50%;
+      transform: scale(0); animation: rippleAnim 0.4s ease-out;
+      background: rgba(179,157,219,0.35); pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    /* BUTTON VARIANTS */
+    .btn-clear { background: var(--pink-bg); color: var(--pink); border-color: rgba(244,143,177,0.2); font-size: 0.85rem; }
+    .btn-clear:hover { background: #f8d7e6; }
+
+    .btn-del { background: var(--orange-bg); color: var(--orange); border-color: rgba(255,183,77,0.2); font-size: 0.85rem; }
+    .btn-del:hover { background: #ffeac8; }
+
+    .btn-op { background: var(--purple-bg); color: var(--purple); border-color: rgba(179,157,219,0.25); font-weight: 600; }
+    .btn-op:hover { background: #e5daf5; }
+
+    .btn-eq {
+      background: var(--eq-bg); color: var(--eq-text);
+      border-color: transparent; font-size: 1.2rem;
+      box-shadow: 0 4px 14px rgba(179,157,219,0.5);
+    }
+    .btn-eq:hover { background: #a589d0; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(179,157,219,0.55); }
+    .btn-eq:active { transform: translateY(0); }
+
+    .btn-zero { grid-column: span 2; }
+
+    .btn-num { font-family: 'DM Mono', monospace; font-size: 1.05rem; }
+
+
+
+    /* ANIMATIONS */
+    @keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+    .display-main.pop { animation: pop 0.15s ease; }
+
+    @media (max-width: 600px) {
+      body { flex-direction: column; align-items: center; }
+    }
